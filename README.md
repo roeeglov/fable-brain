@@ -17,22 +17,27 @@ A single agent reviewing its own code shares its own blind spots. Splitting **bu
 
 ## Install
 
+Install both skills (fable-brain + its bundled coding-standards skill, Ponytail):
+
 ```bash
 npx skills add roeeglov/fable-brain@fable-brain -g
+npx skills add roeeglov/fable-brain@ponytail -g
 ```
 
-Or manually: copy the `fable-brain/` folder into `~/.claude/skills/` (global) or your project's `.claude/skills/`.
+Or manually: copy the `fable-brain/` and `ponytail/` folders into `~/.claude/skills/` (global) or your project's `.claude/skills/`.
 
 **Optional:** copy `fable-brain/agents/*.md` into your project's `.claude/agents/` so the Task tool can target `opus-builder`, `opus-adversary`, and `sonnet-runner` by name with the right model pinned. The skill's `agents/` folder is the source of truth — re-copy on updates rather than editing project copies.
 
-## Prerequisite: a coding-standards skill
+## Bundled: Ponytail (coding-standards skill)
 
-Briefs instruct every code-writing agent to load `.claude/skills/ponytail/SKILL.md` (a minimal-code / anti-over-engineering skill) before writing anything, and adversaries audit the diff against its rules. If you don't use Ponytail:
+Briefs instruct every code-writing agent to load `.claude/skills/ponytail/SKILL.md` — a minimal-code / anti-over-engineering skill ("the laziest solution that actually works") — before writing anything, and adversaries audit the diff against its rules. **Ponytail is included in this repo** (MIT), so installing both folders gives you a working setup out of the box.
 
-- swap the path in `fable-brain/SKILL.md`, `references/briefing-format.md`, and `references/adversarial-review.md` for your own coding-standards skill, **or**
+Already have your own coding-standards skill? Either:
+
+- swap the path in `fable-brain/SKILL.md`, `references/briefing-format.md`, and `references/adversarial-review.md` for yours, **or**
 - remove the MANDATORY SKILLS section from the brief templates.
 
-Without one of these, builders will report a BLOCKER on the missing file (by design — the dependency fails loud, not silent).
+If the referenced skill file is missing at run time, builders report a BLOCKER (by design — the dependency fails loud, not silent).
 
 ## Usage
 
@@ -55,6 +60,8 @@ fable-brain/
     ├── opus-builder.md             # implementation agent (model: opus)
     ├── opus-adversary.md           # red-team agent (model: opus)
     └── sonnet-runner.md            # mechanical execution agent (model: sonnet)
+ponytail/
+└── SKILL.md                        # bundled coding-standards skill (MIT) — builders follow it, adversaries audit against it
 ```
 
 ## Design principles
