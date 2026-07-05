@@ -2,9 +2,25 @@
 
 A Claude Code skill that turns your session into an **orchestrator brain** that never writes code itself — it plans, dispatches builder subagents to implement, then dispatches independent **adversarial** subagents whose only job is to attack the builders' work and find bugs, contract violations, and security holes. The brain arbitrates the findings and closes the loop.
 
+Designed to run the brain on **Fable** with **Opus** builders/adversaries and **Sonnet** scouts/runners — see [Model routing](#model-routing).
+
 ## Why
 
 A single agent reviewing its own code shares its own blind spots. Splitting **builders** (who construct) from **adversaries** (who are rewarded only for finding what's wrong) creates genuinely independent verification. The orchestrator stays cheap: it reads reports, not code — all high-volume reading and writing is delegated.
+
+## Model routing
+
+Each role runs on the model whose strengths (and cost) fit the work:
+
+| Role | Model | Work | Why this model |
+|------|-------|------|----------------|
+| **Brain** (your main session) | **Fable** | plan, write briefs, arbitrate findings, confirm | Highest-judgment, lowest-volume seat. The brain never reads or writes code — only reports in, briefs out — so the premium model's tokens go purely to judgment. |
+| **Builders** | **Opus** | write all production code | Substantive implementation needs strong coding judgment, but it's high-volume — routed below the brain. |
+| **Adversaries** | **Opus** | attack the builders' work: bugs, edge cases, security | Finding subtle bugs is the highest-judgment work in the loop — never route it cheaper. |
+| **Scouts** | **Sonnet** | read-only recon with file:line citations | Faithful reading, not judgment. Upgrade to Opus only when the recon itself requires interpretation. |
+| **Runners** | **Sonnet** | run test suites, file moves, mechanical codemods | Output is fully determined by the brief — no judgment involved. |
+
+The principle: **volume flows down, judgment flows up.** The most expensive model does the least reading/writing; the cheapest does the most mechanical work. If you don't have Fable, run the brain on Opus — the routing logic is identical, the brain just shares a tier with the builders. And if you hesitate about where to route a task, that hesitation means Opus.
 
 ## The loop
 
